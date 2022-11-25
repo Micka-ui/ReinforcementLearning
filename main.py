@@ -5,6 +5,7 @@
 
 import gym
 import numpy as np
+from ReplayBuffer import *
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -14,17 +15,22 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     env = gym.make('CartPole-v1', render_mode="human")
-    state = env.reset()
-    print(state[0])
+    obs = env.reset()
     print(env.action_space)
     print(env.observation_space)
-    n_actions = 100
+    replayBuffer = ReplayBuffer(size_buffer = 2,action_size=1,state_size=env.observation_space.shape[0])
+    print(env.observation_space.shape[0])
+    n_actions = 200
     done = False
     for i in range(n_actions):
         while not done:
             env.render()
             action = np.random.randint(2)
-            obs, reward, done,info ,_ = env.step(action)
-            print(obs,reward,done, info,_) info
+            next_obs, reward, done,info ,_ = env.step(action)
+            replayBuffer.store(np.array(obs[0]),action,reward,np.array(next_obs[0]),done)
+
+            obs = next_obs
+    print(replayBuffer.states)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
