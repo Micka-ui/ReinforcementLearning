@@ -15,10 +15,10 @@ if __name__ == '__main__':
     action_size = env.action_space.n
     state_size = env.observation_space.shape[0]
 
-    n_episodes = 3
+    n_episodes = 600
     batch_size = 32
     epsilon = 1.0
-    episode_start = 1
+    episode_start = 20
     epsilon_decay = 0.99
     gamma = 0.95
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-3)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
                 agent.learn(batch_size)
         score_history.append(score)
         if episode%10==0:
-            print('Average score over last 100 episodes : %.2f'%(np.mean(score_history[-100:])))
+            print('Episode : %s ,Average score over last 100 episodes : %.2f'%(episode,np.mean(score_history[-100:])))
 
 
 

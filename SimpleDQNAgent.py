@@ -25,7 +25,7 @@ class SimpleDQNAgent(object):
             if rand<epsilon:
                 action = np.random.randint(self.action_size)
             else:
-                Q_values = self.Qnetwork.predict(state[np.newaxis])
+                Q_values = self.Qnetwork.predict(state[np.newaxis],verbose=0)
                 action = np.argmax(Q_values[0])
             return action
 
@@ -36,7 +36,7 @@ class SimpleDQNAgent(object):
     def learn(self,batch_size):
         batch = self.memory.sample_batch(batch_size)
         states,actions,rewards,next_states,dones = batch
-        next_Q_values = self.Qnetwork.predict(next_states)
+        next_Q_values = self.Qnetwork.predict(next_states,verbose=0)
         max_next_Q_values = np.max(next_Q_values,axis=1,keepdims=True)
         target_Q_values = (rewards + (1-dones)*self.gamma*max_next_Q_values)
         mask = tf.one_hot(actions.squeeze(),self.action_size)
