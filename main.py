@@ -16,21 +16,11 @@ def print_hi(name):
 if __name__ == '__main__':
     env = gym.make('CartPole-v1', render_mode="human")
     obs = env.reset()
-    print(env.action_space)
+    print(env.action_space.n)
     print(env.observation_space)
-    replayBuffer = ReplayBuffer(size_buffer = 2,action_size=1,state_size=env.observation_space.shape[0])
     print(env.observation_space.shape[0])
-    n_actions = 200
-    done = False
-    for i in range(n_actions):
-        while not done:
-            env.render()
-            action = np.random.randint(2)
-            next_obs, reward, done,info ,_ = env.step(action)
-            replayBuffer.store(np.array(obs[0]),action,reward,np.array(next_obs[0]),done)
 
-            obs = next_obs
-    print(replayBuffer.states)
+
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
