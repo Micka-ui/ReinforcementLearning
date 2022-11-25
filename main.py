@@ -8,6 +8,7 @@ import numpy as np
 from SimpleDQNAgent import *
 import pickle
 import os
+import matplotlib.pyplot as plt
 
 
 
@@ -51,8 +52,29 @@ if __name__ == '__main__':
             print('Episode : %s ,Average score over last 100 episodes : %.2f'%(episode,np.mean(score_history[-100:])))
     path = 'model'
     np.save(os.path.join(path,'score_history.npy'),np.array(score_history))
-
     agent.Qnetwork.save(os.path.join(path,'Qnetwork_%2.f.hf5'%(np.mean(score_history))))
+    env.close()
+    def play_on_episode(model):
+        env = gym.make('CartPole-v1',render_mode="human")
+
+        done = False
+        state = env.reset()[0]
+        while not done:
+            env.render()
+            Q_values = model.predict(state[np.newaxis],verbose=0)
+            action = np.argmax(Q_values[0])
+            next_state, reward, done, _, _ = env.step(action)
+            state =next_state
+
+
+
+
+    play_on_episode(agent.Qnetwork)
+    plt.plot(score_history)
+    plt.show()
+
+
+
 
 
 
