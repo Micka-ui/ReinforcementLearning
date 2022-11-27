@@ -6,7 +6,8 @@
 import gym
 import numpy as np
 from SimpleDQNAgent import *
-from TargetDQNagent import *
+from TargetDQNAgent import *
+from DoubleTQNAgent import *
 import pickle
 import os
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     gamma = 0.95
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-3)
     loss_fn = tf.keras.losses.MeanSquaredError()
-    agent = TargetDQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
+    agent = DoubleTQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
                            loss_fn=loss_fn,gamma=gamma)
 
 
@@ -56,8 +57,8 @@ if __name__ == '__main__':
             print('Episode : %s ,Average score over last 100 episodes : %.2f %s'%(episode,\
                                                                                   np.mean(np.array(score_history[-100:])),len(agent.memory.states)))
     path = 'model'
-    np.save(os.path.join('scores/TQNetwork_score_history.npy'),np.array(score_history))
-    agent.Qnetwork.save(os.path.join(path,'TargetQnetwork.hf5'))
+    np.save(os.path.join('scores/DTQNetwork_score_history.npy'),np.array(score_history))
+    agent.Qnetwork.save(os.path.join(path,'DoubleTQnetwork.hf5'))
     env.close()
     def play_on_episode(model):
         env = gym.make('CartPole-v1',render_mode="human")
