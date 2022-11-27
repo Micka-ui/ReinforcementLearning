@@ -49,10 +49,11 @@ if __name__ == '__main__':
                 agent.learn(batch_size)
         score_history.append(score)
         if episode%10==0:
-            print('Episode : %s ,Average score over last 100 episodes : %.2f %s'%(episode,np.mean(score_history[-100:]),len(agent.memory.states)))
+            print('Episode : %s ,Average score over last 100 episodes : %.2f %s'%(episode,\
+                                                                                  np.mean(np.array(score_history[-100:])),len(agent.memory.states)))
     path = 'model'
-    np.save(os.path.join(path,'score_history.npy'),np.array(score_history))
-    agent.Qnetwork.save(os.path.join(path,'Qnetwork_%2.f.hf5'%(np.mean(score_history))))
+    np.save(os.path.join('scores/SQNetwork_score_history.npy'),np.array(score_history))
+    agent.Qnetwork.save(os.path.join(path,'SimpleQnetwork.hf5'))
     env.close()
     def play_on_episode(model):
         env = gym.make('CartPole-v1',render_mode="human")
