@@ -18,6 +18,9 @@ class SimpleDQNAgent(object):
                         tf.keras.layers.Dense(128,activation = 'elu'),
                         tf.keras.layers.Dense(self.action_size)])
         self.Qnetwork.compile(optimizer=self.optimizer,loss = self.loss_fn)
+
+        self.targetQnetwork = tf.keras.models.clone_model(self.Qnetwork)
+        self.targetQnetwork.set_weights(self.Qnetwork.get_weights())
         self.memory = ReplayBuffer(size_buffer=buffer_size,action_size=n_actions,state_size=state_size)
 
     def epsilon_greedy(self,state,epsilon):
@@ -36,7 +39,7 @@ class SimpleDQNAgent(object):
     def learn(self,batch_size):
         batch = self.memory.sample_batch(batch_size)
         states,actions,rewards,next_states,dones = batch
-        next_Q_values = self.Qnetwork(next_states,training = False).numpy()
+        next_Q_values = self.targetQnetwork.(next_states,training=False).numpy()
         max_next_Q_values = np.max(next_Q_values,axis=1,keepdims=True)
         target_Q_values = (rewards + (1-dones)*self.gamma*max_next_Q_values)
         mask = tf.one_hot(actions.squeeze(),self.action_size)
@@ -46,6 +49,3 @@ class SimpleDQNAgent(object):
             loss = self.loss_fn(Q_values,target_Q_values)
         gradients = tape.gradient(loss,self.Qnetwork.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients,self.Qnetwork.trainable_variables))
-
-
-
