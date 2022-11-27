@@ -3,7 +3,7 @@ import tensorflow as tf
 from ReplayBuffer import *
 import sys
 
-class SimpleDQNAgent(object):
+class TargetDQNAgent(object):
     def __init__(self,buffer_size,n_actions,action_size,state_size,optimizer,loss_fn,gamma):
         self.gamma = gamma
         self.buffer_size = buffer_size
@@ -39,7 +39,7 @@ class SimpleDQNAgent(object):
     def learn(self,batch_size):
         batch = self.memory.sample_batch(batch_size)
         states,actions,rewards,next_states,dones = batch
-        next_Q_values = self.targetQnetwork.(next_states,training=False).numpy()
+        next_Q_values = self.targetQnetwork(next_states,training=False).numpy()
         max_next_Q_values = np.max(next_Q_values,axis=1,keepdims=True)
         target_Q_values = (rewards + (1-dones)*self.gamma*max_next_Q_values)
         mask = tf.one_hot(actions.squeeze(),self.action_size)

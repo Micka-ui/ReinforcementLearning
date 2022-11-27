@@ -6,6 +6,7 @@
 import gym
 import numpy as np
 from SimpleDQNAgent import *
+from TargetDQNagent import *
 import pickle
 import os
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ if __name__ == '__main__':
     state_size = env.observation_space.shape[0]
 
     n_episodes = 400
+    frequence_update = 25
     batch_size = 32
     epsilon = 1.0
     episode_start = 30
@@ -26,7 +28,7 @@ if __name__ == '__main__':
     gamma = 0.95
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-3)
     loss_fn = tf.keras.losses.MeanSquaredError()
-    agent = SimpleDQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
+    agent = TargetDQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
                            loss_fn=loss_fn,gamma=gamma)
 
 
@@ -47,13 +49,15 @@ if __name__ == '__main__':
                 state = next_state
             if episode>=episode_start:
                 agent.learn(batch_size)
+                if episode%frequence_update==0:
+                    agent.targetQnetwork.set_weights(agent.Qnetwork.get_weights())
         score_history.append(score)
         if episode%10==0:
             print('Episode : %s ,Average score over last 100 episodes : %.2f %s'%(episode,\
                                                                                   np.mean(np.array(score_history[-100:])),len(agent.memory.states)))
     path = 'model'
-    np.save(os.path.join('scores/SQNetwork_score_history.npy'),np.array(score_history))
-    agent.Qnetwork.save(os.path.join(path,'SimpleQnetwork.hf5'))
+    np.save(os.path.join('scores/TQNetwork_score_history.npy'),np.array(score_history))
+    agent.Qnetwork.save(os.path.join(path,'TargetQnetwork.hf5'))
     env.close()
     def play_on_episode(model):
         env = gym.make('CartPole-v1',render_mode="human")
