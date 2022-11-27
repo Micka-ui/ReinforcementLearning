@@ -18,10 +18,10 @@ if __name__ == '__main__':
     action_size = env.action_space.n
     state_size = env.observation_space.shape[0]
 
-    n_episodes = 6
+    n_episodes = 400
     batch_size = 32
     epsilon = 1.0
-    episode_start = 20
+    episode_start = 30
     epsilon_decay = 0.99
     gamma = 0.95
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-3)
@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 agent.learn(batch_size)
         score_history.append(score)
         if episode%10==0:
-            print('Episode : %s ,Average score over last 100 episodes : %.2f'%(episode,np.mean(score_history[-100:])))
+            print('Episode : %s ,Average score over last 100 episodes : %.2f %s'%(episode,np.mean(score_history[-100:]),len(agent.memory.states)))
     path = 'model'
     np.save(os.path.join(path,'score_history.npy'),np.array(score_history))
     agent.Qnetwork.save(os.path.join(path,'Qnetwork_%2.f.hf5'%(np.mean(score_history))))
