@@ -1,7 +1,8 @@
 from ReplayBuffer import *
+from DuelingQNetwork import *
 import sys
 
-class DoubleTQNAgent(object):
+class DuelingDTQNAgent(object):
     def __init__(self,buffer_size,n_actions,action_size,state_size,optimizer,loss_fn,gamma):
         self.gamma = gamma
         self.buffer_size = buffer_size
@@ -11,13 +12,11 @@ class DoubleTQNAgent(object):
         self.optimizer = optimizer
         self.loss_fn = loss_fn
 
-        self.Qnetwork = tf.keras.Sequential([
-                        tf.keras.layers.Dense(128,activation = 'elu',input_shape=[self.state_size]),
-                        tf.keras.layers.Dense(128,activation = 'elu'),
-                        tf.keras.layers.Dense(self.action_size)])
-        self.Qnetwork.compile(optimizer=self.optimizer,loss = self.loss_fn)
+        self.Qnetwork = DuelingQNetwork(action_size,state_size)
 
-        self.targetQnetwork = tf.keras.models.clone_model(self.Qnetwork)
+
+        self.targetQnetwork = self.Qnetwork = DuelingQNetwork(action_size,state_size)
+        self.targetQnetwork.compile(optimizer=self.optimizer, loss=self.loss_fn)
         self.targetQnetwork.set_weights(self.Qnetwork.get_weights())
         self.memory = ReplayBuffer(size_buffer=buffer_size,action_size=n_actions,state_size=state_size)
 
