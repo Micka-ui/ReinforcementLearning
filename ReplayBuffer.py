@@ -5,10 +5,10 @@ class ReplayBuffer(object):
         self.size_buffer = size_buffer
         self.action_size = action_size
         self.state_size = state_size
-        self.states = np.zeros((size_buffer,state_size))
+        self.states = np.zeros((size_buffer,*state_size))
         self.actions = np.zeros((size_buffer,action_size))
         self.rewards = np.zeros((size_buffer,1))
-        self.next_states = np.zeros((size_buffer,state_size))
+        self.next_states = np.zeros((size_buffer,*state_size))
         self.dones = np.zeros((size_buffer,1))
         self.current_ind = 0
 

@@ -1,5 +1,5 @@
 from ReplayBuffer import *
-from DuelingQNetwork import *
+from VisualDuelingQNetwork import *
 import sys
 
 class VisualDuelingDTQNAgent(object):
@@ -12,10 +12,10 @@ class VisualDuelingDTQNAgent(object):
         self.optimizer = optimizer
         self.loss_fn = loss_fn
 
-        self.Qnetwork = DuelingQNetwork(action_size,state_size)
+        self.Qnetwork = VisualDuelingQNetwork(action_size,state_size)
 
 
-        self.targetQnetwork  = DuelingQNetwork(action_size,state_size)
+        self.targetQnetwork  = VisualDuelingQNetwork(action_size,state_size)
         self.targetQnetwork.compile(optimizer=self.optimizer, loss=self.loss_fn)
         self.targetQnetwork.set_weights(self.Qnetwork.get_weights())
         self.memory = ReplayBuffer(size_buffer=buffer_size,action_size=n_actions,state_size=state_size)

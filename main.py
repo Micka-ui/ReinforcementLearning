@@ -8,7 +8,7 @@ import numpy as np
 from SimpleDQNAgent import *
 from TargetDQNAgent import *
 from DoubleTQNAgent import *
-from DuelingDTQNAgent import *
+from VisualDuelingDTQNAgent import *
 import pickle
 import os
 import matplotlib.pyplot as plt
@@ -17,9 +17,17 @@ import matplotlib.pyplot as plt
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    env = gym.make('CartPole-v1')
+    env = gym.make('CartPole-v1',render_mode="rgb_array")
     action_size = env.action_space.n
-    state_size = env.observation_space.shape[0]
+    env.reset()
+    img = env.render()
+    img = tf.image.rgb_to_grayscale(img/255.)
+    img = tf.image.resize(img, (64,64)).numpy()
+
+    state_size = img.shape
+    print('state_size:', img.shape)
+
+
 
     n_episodes = 400
     frequence_update = 25
@@ -30,19 +38,26 @@ if __name__ == '__main__':
     gamma = 0.95
     optimizer = tf.keras.optimizers.Adam(learning_rate = 1e-3)
     loss_fn = tf.keras.losses.MeanSquaredError()
-    agent = DuelingDTQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
+    agent = VisualDuelingDTQNAgent(buffer_size=5000,n_actions=1,action_size=action_size,state_size=state_size,optimizer=optimizer,\
                            loss_fn=loss_fn,gamma=gamma)
 
 
     done = False
     score_history = []
     for episode in range(n_episodes):
-        state = env.reset()[0]
+        _ = env.reset()[0]
+        state = env.render()
+        state = tf.image.rgb_to_grayscale(state/255.)
+        state = tf.image.resize(state, (64, 64)).numpy()
         score = 0
         for step in range(200):
             epsilon = max(epsilon*epsilon_decay,0.05)
             action = agent.epsilon_greedy(state,epsilon)
-            next_state, reward, done,_,_ = env.step(action)
+            _, reward, done,_,_ = env.step(action)
+            next_state = env.render()
+            next_state = tf.image.rgb_to_grayscale(next_state/255.)
+            next_state = tf.image.resize(next_state, (64, 64)).numpy()
+
             agent.remember((state,action,reward,next_state,done))
             score+=reward
             if done:
@@ -79,7 +94,6 @@ if __name__ == '__main__':
     play_on_episode(agent.Qnetwork)
     plt.plot(score_history)
     plt.show()
-
 
 
 

@@ -1,9 +1,9 @@
 import tensorflow as tf
 
-class DuelingQNetwork(tf.keras.Model):
+class VisualDuelingQNetwork(tf.keras.Model):
 
     def __init__(self,actions_size,state_size):
-        super(DuelingQNetwork,self).__init__()
+        super(VisualDuelingQNetwork,self).__init__()
         self.action_size = actions_size
         self.state_size = state_size
 
